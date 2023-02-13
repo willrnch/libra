@@ -219,4 +219,28 @@ impl<'t> ChainInfo<'t> {
     pub fn into_nft_public_info(self) -> NFTPublicInfo<'t> {
         NFTPublicInfo::new(self.chain_id, self.rest_api_url.clone(), self.root_account)
     }
+
+    /// Commit miner proof
+    pub async fn ol_commit_proof(
+        &mut self,
+        mut account: LocalAccount,
+        block: ol_types::block::VDFProof
+    ) -> Result<()> {
+        let factory = self.transaction_factory();
+        let client = self.rest_client();
+
+        let txn = account
+            .sign_with_transaction_builder(
+                factory.payload(
+                    transaction_builder::stdlib::encode_minerstate_commit_script_function(
+                        block.preimage.clone(),
+                        block.proof.clone(),
+                        block.difficulty(),
+                        block.security(),
+                    )
+                )
+            );
+        client.submit_and_wait(&txn).await?;
+        Ok(())
+    }
 }
