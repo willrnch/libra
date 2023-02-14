@@ -66,7 +66,7 @@ impl Runnable for BacklogCmd {
             waypoint
         };
 
-        let tx_params = TxParams::new(
+        let res = TxParams::new(
             cfg.clone(),
             url,
             waypoint,
@@ -76,8 +76,11 @@ impl Runnable for BacklogCmd {
             is_operator,
             use_first_url,
             None,
-        )
-        .expect("could not get tx parameters");
+        );
+
+
+        let tx_params = res
+            .expect("could not get tx parameters");
 
         let mut processed_commands = 0u8;
 

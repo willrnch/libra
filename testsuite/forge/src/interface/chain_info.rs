@@ -229,18 +229,33 @@ impl<'t> ChainInfo<'t> {
         let factory = self.transaction_factory();
         let client = self.rest_client();
 
+
+        let payload = transaction_builder::stdlib::encode_minerstate_commit_script_function(
+           block.preimage.clone(),
+           block.proof.clone(),
+           block.difficulty(),
+           block.security(),
+        );
+
+        println!("payload = {:?}", payload);
+        
+        println!("sign_with_transaction_builder");
         let txn = account
             .sign_with_transaction_builder(
-                factory.payload(
-                    transaction_builder::stdlib::encode_minerstate_commit_script_function(
-                        block.preimage.clone(),
-                        block.proof.clone(),
-                        block.difficulty(),
-                        block.security(),
-                    )
-                )
+                factory.payload(payload)
             );
-        client.submit_and_wait(&txn).await?;
+
+        println!("client.submit_and_wait(&txn).await?;");
+
+        match client.submit_and_wait(&txn).await {
+            Ok(res) => {
+
+            },
+            Err(err) => {
+                println!("error = {:?}", err);
+            }
+        }
+
         Ok(())
     }
 }
