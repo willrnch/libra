@@ -135,7 +135,6 @@ pub fn get_account_transaction(
 
     if let Some(tx) = tx {
         Ok(Some(TransactionView::try_from_tx_and_events(
-            db.get_block_timestamp(tx.version).unwrap(),
             tx.version,
             tx.transaction,
             tx.proof.transaction_info,
@@ -181,7 +180,6 @@ pub fn get_account_transactions(
             .ok_or_else(|| format_err!("Can not find transaction for seq {}!", seq))?;
 
         let tx_view = TransactionView::try_from_tx_and_events(
-            db.get_block_timestamp(tx.version).unwrap(),
             tx.version,
             tx.transaction,
             tx.proof.transaction_info,
